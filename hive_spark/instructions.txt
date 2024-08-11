@@ -1,0 +1,90 @@
+This document aims to guide you to use Hive and PySpark for preprocessing and analysis on AWS EC2 
+
+Step 0: Start the Hadoop cluster 
+
+1. Switch the current user to the Hadoop user, which is necessary to perform Hadoop-related operations.
+sudo su – Hadoop
+
+2. Sets up and initiate the HDFS directory structure on the local filesystem. This command should only be run once, as running it again will delete all data in the HDFS.
+hdfs namenode -format 
+
+3. Starts all the Hadoop clusters including Namenode, Datanode, ResourceManager, and NodeManager.
+start-all.sh
+
+4. Changes the current directory to asm1, which is a workspace used for this work. 
+cd asm1
+
+Step 1 : Load the data using PySpark
+1. When you are in ~/asm1$, create a python file.
+vi initialise_data_to_hive.py
+
+2. Paste in the python code in '01_initialise_data_to_hive.py'.
+
+3. Close the editor
+click 'esc' and type ':wq'.
+
+4. Run the python script.
+spark-submit initialise_data_to_hive.py
+
+5. Initiate the Hive session
+Hive 
+
+6. Paste in the SQL code 'create_news_table.sql'. 
+
+
+Step 2: Preprocess the data 
+
+1. create a python file 
+vi clean.py
+
+2. Paste in the python code from '02_clean.py'
+
+3. Paste the file into HDFS
+hadoop fs -put /home/hadoop/asm1/clean.py hdfs:///user/hadoop/python_script/clean.py
+
+3. Run the python script.
+spark-submit hdfs:///user/hadoop/python_script/clean.py
+
+4. Initiate the Hive session
+Hive 
+
+5. Create table by paste in the SQL code 'create_cleaned_news_table.sql'
+
+Step 3: Perform Analysis
+
+1. Initiate the Hive session
+Hive 
+
+2. To explore the distribution of sources of summarisation_data, paste in the code for distribution_summarisation_dataset.sql
+
+3. Paste in the SQL code top20_wordcount.sql; 
+top20_wordcount.sql 
+
+4. Length of Content and Summary
+initiate Spark session using command 'Spark'
+paste in code from wordlength.py
+
+5. Average wordcount for Content an Summary
+initiate Spark session using command 'Spark'
+paste in code from wordcount.py
+
+6. Derive the Compression ratio
+initiate Spark session using command 'Spark'
+paste in code from compression_ratio.py
+
+7. To perform sentiment analysis
+initiate Spark session using command 'Spark'
+generate sentiment score using generate_sentiment_score.py
+exit spark session using exit()
+enter hive session using 'hive'
+create table sentiment_score table using create_sentiment_table.sql
+enter spark session
+calculate average and score group by sources of data_summarisation using readsentiment.py
+
+
+
+
+
+
+
+
