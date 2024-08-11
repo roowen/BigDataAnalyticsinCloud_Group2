@@ -1,0 +1,49 @@
+This document aims to guide you step by step to run wordcount using MapReduce approach on AWS EC2. 
+
+1. Switch the current user to the Hadoop user, which is necessary to perform Hadoop-related operations.
+sudo su – Hadoop
+
+2. Sets up and initiate the HDFS directory structure on the local filesystem. This command should only be run once, as running it again will delete all data in the HDFS.
+hdfs namenode -format 
+
+3. Starts all the Hadoop clusters including Namenode, Datanode, ResourceManager, and NodeManager.
+start-all.sh
+
+4. Changes the current directory to asm1, which is a workspace used for this work. 
+cd asm1
+
+5. Creates a directory named wordcount_mapreduce inside the asm1 directory to store all the scripts and compiled classes needed for the MapReduce job.
+mkdir wordcount_mapreduce
+
+6. Changes the current directory to wordcount_mapreduce.
+cd wordcount_mapredue
+
+7. Creates a scripts directory inside wordcount_mapreduce. This directory will store the Java source files for wordcount analysis. 
+mkdir scripts
+
+8. Changes the current directory to scripts.
+cd scripts
+
+9. Opens the nano text editor to create three java files including mapper, reducer and drivers by pasting the source code inside. 
+nano NewsMapper.java (paste NewsMapper.java)
+nano SumReducer.java (paste SumReducer.java)
+nano WordCount.java (paste WordCount.java)
+
+10. Navigate back to the wordcount_mapreduce directory
+cd ../
+
+11. Compiles all the Java source files (*.java) in the scripts directory using the Hadoop classpath. The output will be class files within the scripts directory.
+javac -classpath ` hadoop classpath ` scripts/*.java
+
+12. Creates a JAR file named wc.jar that contains all the compiled .class files from the scripts directory for running wordcount analysis. 
+jar cvf wc.jar scripts/*.class
+
+13. Copy the cleaned_news.csv file from the local filesystem to the HDFS directory /user/hadoop/.
+hadoop fs -put /home/hadoop/asm1/dataset/cleaned_news.csv /user/hadoop/
+
+14. Runs the MapReduce job using the wc.jar file on the dataset uploaded.
+hadoop jar wc.jar scripts.WordCount /user/hadoop/cleaned_news.csv /user/hadoop/wordcount_output002
+
+15. Prints the contents of the part-r-00000 file (the output of the Reducer) to the console by printing the top 20 most frequent words of summary and content.
+hadoop fs -cat /user/hadoop/wordcount_output002/part-r-00000 | grep '^summary_' | sort -nr -k2 | head -n 20
+hadoop fs -cat /user/hadoop/wordcount_output002/part-r-00000 | grep '^content_' | sort -nr -k2 | head -n 20
