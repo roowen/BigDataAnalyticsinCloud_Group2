@@ -5,7 +5,7 @@ from pyspark.sql.types import StructType, StructField, StringType
 input_file = "file:///home/hadoop/asm1/dataset/data.csv"
 
 
-###### read data and replace new line as table 'news' sss
+###### read data and replace new line as table 'news' 
 def initialise_data_to_hive():
     spark = SparkSession.builder.appName("ReadCSV_newlineremoval").getOrCreate()
 
